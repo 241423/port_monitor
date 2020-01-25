@@ -36,23 +36,26 @@ def print_packet(packet):
 ip_list = []
 def DHCP_check(address, port_list):
     dhcp_discover()
-    sniff(filter="port 68", prn=print_packet, timeout=2)
+    sniff(filter="port 68", prn=print_packet, timeout=3)
     DHCP_service=False
+    print(ip_list)
     for i in ip_list:
         if str(i)==str(address):
             DHCP_service=True
-    DHCP = (68 in port_list)
+    ip_list.clear()
+    #print(ip_list)
+    DHCP = (67 in port_list)
     if (DHCP_service == True and DHCP == False):
-        problem = "DNS should be closed, but is open!"
+        problem = "DHCP should be closed, but is open!"
         return problem
     if (DHCP_service == False and DHCP == True):
-        problem = "DNS should be open, but is closed!"
+        problem = "DHCP should be open, but is closed!"
         return problem
     else:
         return "DHCP is good"
 
 
 #porty=[53,67]
-#adres='192.168.2.1'
+#adres='172.20.10.1'
 
-#print(DHCP_check(adres,porty))
+#rint(DHCP_check(adres,porty))

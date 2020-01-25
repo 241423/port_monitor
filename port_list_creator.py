@@ -21,7 +21,7 @@ def TCP_ports():
     port_list=[]
     while(True):
         flag=False
-        port_list=input("Enter TCP ports separating ',': ")
+        port_list=input("Enter TCP ports separated by the ',': ")
         try:
             port_list = list(map(int, port_list.split(',')))
         except:
@@ -77,19 +77,20 @@ def UDP_ports():
     flag_TFTP = input("Is TFTP open? Enter 'y' default no :")
     if flag_TFTP == 'y':
         port_list.append(69)
+    return  port_list
 
 
 #------scanning frequency
 
 def scan_frequency():
     while(True):
-        time=input("Enter scanning frequency [seconds], min 30s : ")
+        time=input("Enter scanning frequency [minutes], min 1 minute : ")
         try:
             int(time)
         except:
             print("Invalid input, try again!")
             continue
-        if int(time)<30:
+        if int(time)<1:
             print("Invalid input, try again!")
             continue
         return time
@@ -101,12 +102,15 @@ ports_TCP=TCP_ports()
 range=TCP_range()
 ports_UDP=UDP_ports()
 time_f=scan_frequency()
+tcp_to_save=str(ports_TCP)[1:-1]
+udp_to_save=str(ports_UDP)[1:-1]
+print(tcp_to_save)
 
 print("Ip address: ",IP_address)
-print("TCP ports: ",ports_TCP)
+print("TCP ports: ",tcp_to_save)
 print("TCP first port: ",range[0])
 print("TCP last port: ", range[1])
-print("UDP ports: ", ports_UDP )
+print("UDP ports: ", udp_to_save )
 print("Scanning frequency: ",time_f)
 
 save_flag=input("Do you want save it? Enter 'y': ")
@@ -114,8 +118,8 @@ if save_flag=='y':
     file_name=input("Enter filename: ")
 with open(file_name, 'w+') as f:
     f.write(str(IP_address)+'\n')
-    f.write(str(ports_TCP) + '\n')
-    f.write(str(ports_UDP) + '\n')
+    f.write(str(tcp_to_save) + '\n')
+    f.write(str(udp_to_save) + '\n')
     f.write(str(range[0]) + '\n')
     f.write(str(range[1]) + '\n')
     f.write(str(time_f) + '\n')

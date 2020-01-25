@@ -12,13 +12,13 @@ def udp_scan(address, port_list):
     DHCP_result = DHCP_fun.DHCP_check(address, port_list)
     scan_problems = scan_problems + str(DHCP_result) + '\n'
 
-    #TFTP_result=TFTP_fun.TFTP_check(address, port_list)
-    #scan_problems = scan_problems + str(TFTP_result)+'\n'
+    TFTP_result=TFTP_fun.TFTP_check(address, port_list)
+    scan_problems = scan_problems + str(TFTP_result)+'\n'
 
-    print(scan_problems)
+    return scan_problems
 
-adres='127.0.0.1'
-porty=[1,2]
-udp_scan(adres,porty)
+#adres='127.0.0.1'
+#porty=[1,2]
+#udp_scan(adres,porty)
 
 

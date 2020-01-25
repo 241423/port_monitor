@@ -21,11 +21,12 @@ TCP_port_list=list(map(int, data[1].split(',')))
 UDP_port_list=list(map(int, data[2].split(',')))
 first=int(data[3])
 last=int(data[4])
-sleep_time=int(data[5])
+sleep_time=int(data[5])*60
 
 #Scanning Process
 
 while True:
+    print(address)
     #Create raport
     now=datetime.datetime.now()
     year=now.strftime("%Y")
@@ -34,24 +35,20 @@ while True:
     time=now.strftime("%H:%M:%S")
 
     raport="Scanning report "+now.strftime('%d/%m/%Y, %H:%M:%S')+"\n"
+    tcp_result=(raport+tcp_scanning.tcp_scan(address, TCP_port_list, first, last))
+    raport=tcp_result
+    udp_result=udp_scanning.udp_scan(address, UDP_port_list)
+    raport = raport + udp_result
 
-    #tcp_result=(raport+tcp_scanning.tcp_scan(address, TCP_port_list, first, last))
-    #raport=tcp_result
-    #print(raport)
-
-    udp_scanning.udp_scan(address, UDP_port_list)
-
-
-
-
-    import time
-    time.sleep(sleep_time)
 
     today = ('{}-{}-{}').format(day, month, year)
     file_save_name = ("raport ip:{} date: {} ".format(address, today))
-    print(file_save_name)
+    print(raport)
     # Write report to file
     with open(file_save_name, 'a') as file:
-        file.write("elo" + "\n")
+        file.write(raport + "\n")
+
+    import time
+    time.sleep(sleep_time)
 
 
