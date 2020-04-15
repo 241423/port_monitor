@@ -1,29 +1,38 @@
 import socket
 
+class cTCP:
+    def __init__(self, address, port_list, first, last):
+        self.address=address
+        self.port_list=port_list
+        self.first=first
+        self.last=last
+        self.open_ports=[]
+        self.result = 'TCP scan result:\n'
+        self.scaning()
+        self.check()
 
-def tcp_scan(address, port_list, first, last):
-    open_ports=[]  #list with open ports
-    #Ports scanning
-    for port in range(first,last):
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  #create socket
-        result=s.connect_ex((address, port))  #try connect
-        if(result==0): #if connect is good add to list
-            open_ports.append(port)
-    scan_problems='TCP scan result:\n'
-    #Check ports
-    good_flag=True #to result information
-    for i in open_ports:
-        check=(i in port_list) #Check this open port should be open
-        if(check==False): #if no
-            problem=("Warning! Port {} should be closed!".format(i))
-            good_flag=False
-            scan_problems=(scan_problems+problem+"\n")
-    if good_flag==True:
-        scan_problems=scan_problems+"TCP is good\n"
-    return scan_problems
+    def scaning(self):
+        for port in range(self.first, self.last):
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            result = s.connect_ex((self.address, port))  # try connect
+            if (result == 0):  # if connect is good add to list
+                self.open_ports.append(port)
 
+    def check(self):
+        flag = True
+        for i in self.open_ports:
+            check = (i in self.port_list)
+            if (check == False):  # if no
+                self.result = self.result +("Warning! Port {} should be closed!".format(i))+"\n"
+                flag = False  #detection flag
+        if flag == True:
+            self.result = self.result + "TCP is good\n"
+
+
+#-------test
 #adres="127.0.0.1"
 #porty=[53,81]
 #pierwszy=50
-#ostatni=100
-#print(tcp_scan(adres,porty,pierwszy,ostatni))
+#ostatni=1000
+#tcp_instance=cTCP(adres,porty,pierwszy,ostatni)
+#print(tcp_instance.result)

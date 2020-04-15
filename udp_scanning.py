@@ -2,23 +2,34 @@ import DNS_fun
 import DHCP_fun
 import TFTP_fun
 
-#---------main
-def udp_scan(address, port_list):
-    scan_problems = 'UDP scan result:\n'
+class cUDP:
+    def __init__(self, address, port_list):
+        self.address=address
+        self.port_list=port_list
+        self.result='UDP scan result:\n'
+        self.dns_scan()
+        self.dhcp_scan()
+        self.tftp_scan()
 
-    DNS_result=DNS_fun.DNS_check(address,port_list)
-    scan_problems=scan_problems+str(DNS_result)+'\n'
+    def dns_scan(self):
+        dns_instance=DNS_fun.cDNS(self.address, self.port_list)
+        dns_result=dns_instance.DNS_result+'\n'
+        self.result= self.result+ dns_result
 
-    DHCP_result = DHCP_fun.DHCP_check(address, port_list)
-    scan_problems = scan_problems + str(DHCP_result) + '\n'
+    def dhcp_scan(self):
+        dhcp_instance=DHCP_fun.cDHCP(self.address, self.port_list)
+        dhcp_result = dhcp_instance.dhcp_result+'\n'
+        self.result = self.result + dhcp_result
 
-    TFTP_result=TFTP_fun.TFTP_check(address, port_list)
-    scan_problems = scan_problems + str(TFTP_result)+'\n'
+    def tftp_scan(self):
+        tftp_instance = TFTP_fun.cTFTP(self.address, self.port_list)
+        tftp_result = tftp_instance.TFTP_result+'\n'+'\n'
+        self.result = self.result + tftp_result
 
-    return scan_problems
 
+#----test
 #adres='127.0.0.1'
 #porty=[1,2]
-#udp_scan(adres,porty)
-
+#udp_instace=cUDP(adres,porty)
+#print(udp_instace.result)
 

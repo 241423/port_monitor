@@ -1,34 +1,40 @@
 import dns.resolver
 from dns.exception import DNSException
-def DNS_check(address, port_list):
-    DNS_service = True
-    my_resolver = dns.resolver.Resolver()
-    my_resolver.nameservers = [address]  # ip address DNS server
-    my_resolver.lifetime = 3  # time out
-    my_resolver.timeout=3
-    try:
-        answer = my_resolver.query('google.com')
-        raise  dns.exception.Timeout
-    except dns.exception.Timeout:
-        DNS_service = False
-    except:
-        DNS_service=True
+
+class cDNS:
+    def __init__(self, dest_address, port_list):
+        self.dest_address=dest_address
+        self.port_list=port_list
+        self.dest_port=53
+        self.time_out = 3
+        self.DNS_service=True
+        self.DNS_port=(self.dest_port in port_list)
+        self.DNS_result=None
+        self.DNS_query()
+        self.DNS_check()
+    def DNS_query(self):
+        my_resolver = dns.resolver.Resolver()
+        my_resolver.nameservers = [self.dest_address]
+        my_resolver.lifetime = self.time_out
+        try:
+            answer = my_resolver.query('google.com')
+            raise  dns.exception.Timeout
+        except dns.exception.Timeout:
+            self.DNS_service = False
+        except:
+            self.DNS_service=True
+
+    def DNS_check(self):
+        if(self.DNS_service==True and self.DNS_port==False):
+            self.DNS_result="DNS should be closed, but is open!"
+        elif(self.DNS_service==False and self.DNS_port==True):
+            self.DNS_result = "DNS should be open, but is closed!"
+        else:
+            self.DNS_result = "DNS is good"
 
 
-    DNS=(53 in port_list)
-    if(DNS_service==True and DNS==False):
-        #print("DNS jest włączony a nie powinien")
-        problem="DNS should be closed, but is open!"
-        return problem
-    elif(DNS_service==False and DNS==True):
-        #print("DNS jest wyłączony a powinien byc wlaczony")
-        problem = "DNS should be open, but is closed!"
-        return problem
-    else:
-        return "DNS is good"
-
-
+#------test
 #porty=[53,68]
 #adres='127.0.0.1'
-
-#print(DNS_check(adres,porty))
+#dns_instance=cDNS(adres, porty)
+#print(dns_instance.DNS_result)
