@@ -1,5 +1,3 @@
-
-
 #------address
 def check_IP():
     while(True):

@@ -14,8 +14,8 @@ class cTCP:
     def scaning(self):
         for port in range(self.first, self.last):
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            result = s.connect_ex((self.address, port))  # try connect
-            if (result == 0):  # if connect is good add to list
+            result = s.connect_ex((self.address, port))
+            if (result == 0):
                 self.open_ports.append(port)
 
     def check(self):

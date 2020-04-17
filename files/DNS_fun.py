@@ -1,5 +1,4 @@
 import dns.resolver
-from dns.exception import DNSException
 
 class cDNS:
     def __init__(self, dest_address, port_list):
@@ -12,12 +11,14 @@ class cDNS:
         self.DNS_result=None
         self.DNS_query()
         self.DNS_check()
+
     def DNS_query(self):
         my_resolver = dns.resolver.Resolver()
         my_resolver.nameservers = [self.dest_address]
-        my_resolver.lifetime = self.time_out
+        my_resolver.lifetime = 3
         try:
-            answer = my_resolver.query('google.com')
+            my_resolver.query('google.com')
+            my_resolver.put(False, timeout=self.time_out)
             raise  dns.exception.Timeout
         except dns.exception.Timeout:
             self.DNS_service = False

@@ -1,6 +1,6 @@
-import DNS_fun
-import DHCP_fun
-import TFTP_fun
+from files import DNS_fun
+from files import DHCP_fun
+from files import TFTP_fun
 
 class cUDP:
     def __init__(self, address, port_list):

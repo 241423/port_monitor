@@ -1,54 +1,85 @@
 import datetime
 import sys
-import check_input
-import tcp_scanning
-import udp_scanning
+import socket
+from files import tcp_scanning
+from files import udp_scanning
+import os
 
-#Open file with data
-input_file=sys.argv[1]
-data = [line.strip() for line in open(input_file, "r")]
+class cMAIN:
+    def __init__(self, input_file):
+        self.input_file=input_file
+        self.data=[line.strip() for line in open(self.input_file, "r")]
+        self.check_lines()
+        self.check_data()
+        self.address = self.data[0]
+        self.TCP_port_list = list(map(int, self.data[1].split(',')))
+        self.UDP_port_list = list(map(int, self.data[2].split(',')))
+        self.first = int(self.data[3])
+        self.last = int(self.data[4])
+        self.sleep_time = int(self.data[5]) * 60
 
-#Check input data
-if len(data)!=6:
-    print("Bad input file syntax!")
-    exit(0)
+    def check_lines(self):
+        if len(self.data) != 6:
+            print("Bad input file syntax!")
+            exit(0)
 
-check_input.check_input(data)
+    def check_data(self):
+        try:
+            socket.inet_aton(self.data[0])
+        except socket.error:
+            print("Invalid input address!")
+        try:
+            list(map(int, self.data[1].split(',')))
+        except:
+            print("Ports are not intiger")
+        try:
+            list(map(int, self.data[2].split(',')))
+        except:
+            print("Ports are not intiger")
+        try:
+            int(self.data[3])
+        except:
+            print("First port is not intiger")
+        try:
+            int(self.data[4])
+        except:
+            print("Last port is not intiger")
+        if int(self.data[3]) >= int(self.data[4]):
+            print("Last port is lower than first one")
+            exit(0)
+        try:
+            int(self.data[5])
+        except:
+            print("Loop time is not intiger")
 
-#Set Parameters
-address=data[0]
-TCP_port_list=list(map(int, data[1].split(',')))
-UDP_port_list=list(map(int, data[2].split(',')))
-first=int(data[3])
-last=int(data[4])
-sleep_time=int(data[5])*60
+    def scan_process(self):
+        while True:
+            now=datetime.datetime.now()
+            year=now.strftime("%Y")
+            month=now.strftime("%m")
+            day=now.strftime("%d")
+            time=now.strftime("%H:%M:%S")
+            raport="Scanning report "+now.strftime('%d/%m/%Y, %H:%M:%S')+"\n"
 
-#Scanning Process
+            tcp_instance=tcp_scanning.cTCP(self.address,self.TCP_port_list,self.first,self.last)
+            raport=(raport+tcp_instance.result)
 
-while True:
-    print(address)
-    #Create raport
-    now=datetime.datetime.now()
-    year=now.strftime("%Y")
-    month=now.strftime("%m")
-    day=now.strftime("%d")
-    time=now.strftime("%H:%M:%S")
+            udp_instance=udp_scanning.cUDP(self.address,self.UDP_port_list)
+            raport=(raport+udp_instance.result)
+            print(raport)
+            today = ('{}-{}-{}').format(day, month, year)
+            file_name = ("raport ip:{} date: {} ".format(self.address, today))
+            path=os.path.join('raports', file_name)
+            with open(path, 'a') as file:
+                file.write(raport + "\n")
 
-    raport="Scanning report "+now.strftime('%d/%m/%Y, %H:%M:%S')+"\n"
-    tcp_result=(raport+tcp_scanning.tcp_scan(address, TCP_port_list, first, last))
-    raport=tcp_result
-    udp_result=udp_scanning.udp_scan(address, UDP_port_list)
-    raport = raport + udp_result
+            import time
+            time.sleep(self.sleep_time)
 
+def main():
+    scanner_instance = cMAIN(sys.argv[1])
+    scanner_instance.scan_process()
 
-    today = ('{}-{}-{}').format(day, month, year)
-    file_save_name = ("raport ip:{} date: {} ".format(address, today))
-    print(raport)
-    # Write report to file
-    with open(file_save_name, 'a') as file:
-        file.write(raport + "\n")
-
-    import time
-    time.sleep(sleep_time)
-
+if __name__ == "__main__":
+    main()
 
